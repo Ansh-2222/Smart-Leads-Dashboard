@@ -9,7 +9,8 @@
       "Bash(Select-String \"\\\\.env\")",
       "PowerShell(Get-ChildItem -Force \"D:\\\\Engineering\\\\7 sem\\\\New folder \\(3\\)\\\\smart-leads-dashboard\" | Where-Object { $_.Name -like \".gitignore\" -or $_.Name -like \"vercel.json\" })",
       "PowerShell(Get-ChildItem -Force \"D:\\\\Engineering\\\\7 sem\\\\New folder \\(3\\)\\\\smart-leads-dashboard\\\\frontend\" | Where-Object { $_.Name -like \".gitignore\" -or $_.Name -like \"vercel.json\" })",
-      "PowerShell(Get-ChildItem -Force \"D:\\\\Engineering\\\\7 sem\\\\New folder \\(3\\)\\\\smart-leads-dashboard\\\\frontend\" | Where-Object { $_.Name -like \"vercel.json\" })"
+      "PowerShell(Get-ChildItem -Force \"D:\\\\Engineering\\\\7 sem\\\\New folder \\(3\\)\\\\smart-leads-dashboard\\\\frontend\" | Where-Object { $_.Name -like \"vercel.json\" })",
+      "Bash(git *)"
     ]
   }
 }
