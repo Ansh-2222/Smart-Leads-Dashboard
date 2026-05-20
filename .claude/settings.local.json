@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Path \"D:\\\\Engineering\\\\7 sem\\\\New folder \\(3\\)\\\\smart-leads-dashboard\" -Recurse -Name)",
+      "PowerShell(head *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)"
+    ]
+  }
+}
