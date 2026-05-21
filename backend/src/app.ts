@@ -1,5 +1,4 @@
 import express from 'express';
-import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
@@ -12,24 +11,7 @@ const app = express();
 
 app.use(helmet());
 
-const rawCors = env.CORS_ORIGIN || '';
-const allowAllCors = rawCors.trim() === '*';
-const allowedOrigins = allowAllCors ? [] : rawCors.split(',').map((o) => o.trim());
-
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      if (allowAllCors) return callback(null, true);
-      if (!origin || allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-      return callback(new Error(`CORS: origin ${origin} not allowed`));
-    },
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-  }),
-);
+// CORS removed per request — proxy or hosting should handle CORS if needed
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,

@@ -11,7 +11,6 @@ interface EnvConfig {
   JWT_ACCESS_EXPIRES_IN: string;
   JWT_REFRESH_EXPIRES_IN: string;
   BCRYPT_ROUNDS: number;
-  CORS_ORIGIN: string;
 }
 
 const getEnv = (key: string, defaultValue?: string): string => {
@@ -31,5 +30,4 @@ export const env: EnvConfig = {
   JWT_ACCESS_EXPIRES_IN: getEnv('JWT_ACCESS_EXPIRES_IN', '15m'),
   JWT_REFRESH_EXPIRES_IN: getEnv('JWT_REFRESH_EXPIRES_IN', '7d'),
   BCRYPT_ROUNDS: parseInt(getEnv('BCRYPT_ROUNDS', '12'), 10),
-  CORS_ORIGIN: getEnv('CORS_ORIGIN', 'http://localhost:5173'),
 };
