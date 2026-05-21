@@ -34,7 +34,6 @@ A full-stack Lead Management Dashboard built with the MERN stack. Supports JWT a
 | Database | MongoDB 7, Mongoose 9 |
 | Auth | JWT (access + refresh tokens), bcrypt |
 | Deployment | Vercel (frontend), Render (backend), MongoDB Atlas |
-| DevOps | Docker, Docker Compose |
 
 ---
 
@@ -53,7 +52,6 @@ smart-leads-dashboard/
 │   │   ├── services/      # Business logic
 │   │   ├── types/         # TypeScript interfaces and enums
 │   │   └── utils/         # JWT helpers, error/response classes
-│   ├── Dockerfile
 │   └── .env.example
 │
 ├── frontend/
@@ -65,20 +63,14 @@ smart-leads-dashboard/
 │   │   ├── stores/        # Zustand state (auth, leads, theme)
 │   │   ├── types/         # TypeScript types
 │   │   └── utils/         # Utility functions (cn, formatDate)
-│   ├── Dockerfile
-│   ├── nginx.conf
 │   └── .env.example
 │
-├── docker-compose.yml
-├── .env.example
 └── README.md
 ```
 
 ---
 
 ## Running Locally
-
-### Option 1 — Without Docker
 
 **Requirements:** Node.js 20+, MongoDB running on localhost
 
@@ -102,7 +94,6 @@ Backend runs at `http://localhost:5000`
 ```bash
 cd frontend
 cp .env.example .env
-# VITE_API_URL can stay empty for local dev (proxy handles it)
 npm install
 npm run dev
 ```
@@ -110,43 +101,11 @@ Frontend opens at `http://localhost:5173`
 
 ---
 
-### Option 2 — With Docker (Recommended)
-
-**Requirements:** Docker and Docker Compose installed
-
-```bash
-# 1. Clone and enter the project
-git clone https://github.com/your-username/smart-leads-dashboard.git
-cd smart-leads-dashboard
-
-# 2. Set up environment variables
-cp .env.example .env
-# Open .env and set JWT_ACCESS_SECRET and JWT_REFRESH_SECRET
-
-# 3. Start everything
-docker-compose up --build
-```
-
-That's it. All three services start automatically.
-
-| Service | URL |
-|---------|-----|
-| Frontend | http://localhost |
-| Backend API | http://localhost:5000/api/v1 |
-| Health check | http://localhost:5000/health |
-
-MongoDB data is saved in a Docker volume so it survives restarts.
-
-To stop: `docker-compose down`  
-To stop and delete data: `docker-compose down -v`
-
----
-
 ## Environment Variables
 
 ### Backend — `backend/.env`
 
-Copy `backend/.env.example` and fill in the required values.
+Copy `backend/.env.example` and fill in the values.
 
 ```env
 NODE_ENV=development
@@ -167,17 +126,8 @@ CORS_ORIGIN=http://localhost:5173
 
 ```env
 # Leave empty for local dev — Vite proxy routes to localhost:5000
-# Set to your backend URL for production, e.g. https://your-app.onrender.com
+# For production set to your deployed backend URL, e.g. https://your-app.onrender.com
 VITE_API_URL=
-```
-
-### Docker — `.env` (root)
-
-Only the JWT secrets are required:
-
-```env
-JWT_ACCESS_SECRET=your_access_secret_here
-JWT_REFRESH_SECRET=your_refresh_secret_here
 ```
 
 ---
@@ -394,7 +344,7 @@ Response is a `text/csv` file download.
 |------|---------|
 | 200 | Success |
 | 201 | Created |
-| 400 | Bad request (invalid data) |
+| 400 | Bad request |
 | 401 | Not authenticated |
 | 403 | Authenticated but not allowed |
 | 404 | Resource not found |
@@ -420,8 +370,8 @@ Response is a `text/csv` file download.
 
 ## Features Summary
 
-- **JWT Authentication** — Access tokens (15 min) + refresh tokens (7 days) with rotation. Refresh token is stored in an httpOnly cookie, access token in memory.
-- **Role-Based Access Control** — Admin and Sales roles with different data visibility enforced at the database query level.
+- **JWT Authentication** — Access tokens (15 min) + refresh tokens (7 days) with rotation. Refresh token stored in an httpOnly cookie.
+- **Role-Based Access Control** — Admin and Sales roles with data visibility enforced at the database query level.
 - **Lead CRUD** — Create, read, update, delete leads with full validation on both frontend and backend.
 - **Advanced Filtering** — Status, source, and search filters all work together in a single query.
 - **Debounced Search** — 400ms debounce on the search input so the API is not called on every keystroke.
@@ -434,22 +384,18 @@ Response is a `text/csv` file download.
 
 ## Deployment
 
-The app is deployed on two free-tier platforms:
-
 | Service | Platform | URL |
 |---------|----------|-----|
 | Frontend | Vercel | https://smart-leads-dashboard.vercel.app |
 | Backend | Render | https://smart-leads-dashboard-2z9r.onrender.com |
-| Database | MongoDB Atlas | Shared cluster (M0 free tier) |
+| Database | MongoDB Atlas | Shared cluster |
 
-**Notes:**
-- The Render backend may take 30–60 seconds to respond on the first request if it has been idle (free tier spins down after inactivity).
-- The frontend uses `VITE_API_URL` to point to the backend. The `/api/v1` prefix is always appended in code, so the env variable only holds the host.
+> The Render backend may take 30–60 seconds on the first request if it has been idle (free tier spins down after inactivity).
 
 ---
 
 ## Local Development Tips
 
 - Run `npm run typecheck` in the frontend folder to check TypeScript without building.
-- The Vite dev server proxies `/api/*` to `localhost:5000` automatically — you do not need to set `VITE_API_URL` for local development.
+- The Vite dev server proxies `/api/*` to `localhost:5000` — you do not need to set `VITE_API_URL` for local development.
 - The backend `/health` endpoint returns `{ "status": "ok" }` and can be used to verify the server is running.
