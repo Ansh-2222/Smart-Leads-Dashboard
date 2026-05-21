@@ -12,8 +12,8 @@ import { useEffect } from 'react';
 const schema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   email: z.string().email('Enter a valid email'),
-  status: z.nativeEnum(LeadStatus).default(LeadStatus.NEW),
-  source: z.nativeEnum(LeadSource, { required_error: 'Source is required' }),
+  status: z.nativeEnum(LeadStatus),
+  source: z.nativeEnum(LeadSource, { message: 'Source is required' }),
   notes: z.string().max(1000).optional(),
 });
 
@@ -35,7 +35,7 @@ export const LeadForm = ({ lead, onSubmit, onCancel }: LeadFormProps) => {
     resolver: zodResolver(schema),
     defaultValues: lead
       ? { name: lead.name, email: lead.email, status: lead.status, source: lead.source, notes: lead.notes ?? '' }
-      : { status: LeadStatus.NEW },
+      : { status: LeadStatus.NEW, notes: '' },
   });
 
   useEffect(() => {

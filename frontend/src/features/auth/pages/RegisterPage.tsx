@@ -13,10 +13,10 @@ import { AxiosError } from 'axios';
 import { UserRole } from '@/types';
 
 
-const ROLE_OPTIONS = [
+const ROLE_OPTIONS: { value: string; label: string }[] = [
   { value: UserRole.SALES, label: 'Sales User' },
   { value: UserRole.ADMIN, label: 'Admin' },
-] as const;
+];
 
 const schema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -27,7 +27,7 @@ const schema = z.object({
     .regex(/[A-Z]/, 'Must include uppercase')
     .regex(/[a-z]/, 'Must include lowercase')
     .regex(/\d/, 'Must include a number'),
-  role: z.nativeEnum(UserRole).default(UserRole.SALES),
+  role: z.nativeEnum(UserRole),
 });
 
 type FormData = z.infer<typeof schema>;
