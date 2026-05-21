@@ -2,10 +2,23 @@
 
 A full-stack Lead Management Dashboard built with the MERN stack. Supports JWT authentication, role-based access control, advanced filtering, CSV export, and dark mode.
 
-**Live Demo:** [https://smart-leads-dashboard.vercel.app](https://smart-leads-dashboard.vercel.app)  
-**Backend API:** [https://smart-leads-dashboard-2z9r.onrender.com/api/v1](https://smart-leads-dashboard-2z9r.onrender.com/api/v1)  
-**GitHub:** [https://github.com/your-username/smart-leads-dashboard](https://github.com/your-username/smart-leads-dashboard)
+---
 
+## Tech Stack
+
+| Part | Technology |
+|------|-----------|
+| Frontend | React 19, TypeScript, Vite 8, TailwindCSS v4 |
+| State | Zustand 5 |
+| Forms | React Hook Form + Zod |
+| HTTP | Axios |
+| Icons | Lucide React |
+| Backend | Node.js, Express 5, TypeScript |
+| Database | MongoDB 7, Mongoose 9 |
+| Auth | JWT (access + refresh tokens), bcryptjs |
+| Security | Helmet, CORS, express-rate-limit |
+
+---
 
 ## What This Project Does
 
@@ -18,15 +31,15 @@ A full-stack Lead Management Dashboard built with the MERN stack. Supports JWT a
 
 ---
 
-## Tech Stack
+## Pages
 
-| Part | Technology |
-|------|-----------|
-| Frontend | React 19, TypeScript, TailwindCSS v4, Zustand |
-| Backend | Node.js, Express 5, TypeScript |
-| Database | MongoDB 7, Mongoose 9 |
-| Auth | JWT (access + refresh tokens), bcrypt |
-| Deployment | Vercel (frontend), Render (backend), MongoDB Atlas |
+| Route | Description |
+|-------|-------------|
+| `/dashboard` | Stat cards (total, qualified, contacted, lost) + progress bar breakdown by status and source |
+| `/leads` | Paginated lead table with filters, search, add/edit/delete, and CSV export |
+| `/stats` | Full-width analytics view — status and source breakdown with percentages |
+| `/login` | Email + password login |
+| `/register` | Create account (name, email, password, role) |
 
 ---
 
@@ -38,25 +51,25 @@ smart-leads-dashboard/
 │   ├── src/
 │   │   ├── config/        # Environment config, DB connection
 │   │   ├── controllers/   # Route handlers
-│   │   ├── middleware/    # Auth check, validation, error handler
+│   │   ├── middleware/    # Auth, validation, error handler
 │   │   ├── models/        # Mongoose schemas (User, Lead)
 │   │   ├── repositories/  # Database queries
 │   │   ├── routes/        # API route definitions
 │   │   ├── services/      # Business logic
 │   │   ├── types/         # TypeScript interfaces and enums
-│   │   └── utils/         # JWT helpers, error/response classes
-│   └── .env.example
+│   │   └── utils/         # JWT helpers, ApiError, ApiResponse
+│   └── package.json
 │
 ├── frontend/
 │   ├── src/
 │   │   ├── api/           # Axios client and API call functions
-│   │   ├── components/    # Reusable UI components and page layouts
-│   │   ├── features/      # Auth pages and Leads pages
+│   │   ├── components/    # Reusable UI components and layouts
+│   │   ├── features/      # auth/ and leads/ feature modules
 │   │   ├── hooks/         # useLeads, useDebounce
-│   │   ├── stores/        # Zustand state (auth, leads, theme)
+│   │   ├── stores/        # Zustand stores (auth, leads, theme)
 │   │   ├── types/         # TypeScript types
-│   │   └── utils/         # Utility functions (cn, formatDate)
-│   └── .env.example
+│   │   └── utils/         # cn, formatDate
+│   └── vite.config.ts
 │
 └── README.md
 ```
@@ -65,7 +78,7 @@ smart-leads-dashboard/
 
 ## Running Locally
 
-**Requirements:** Node.js 20+, MongoDB running on localhost
+**Requirements:** Node.js 20+, MongoDB running on `localhost:27017`
 
 **1. Clone the repo**
 ```bash
@@ -76,9 +89,24 @@ cd smart-leads-dashboard
 **2. Set up the backend**
 ```bash
 cd backend
-cp .env.example .env
-# Open .env and fill in JWT_ACCESS_SECRET and JWT_REFRESH_SECRET
 npm install
+```
+
+Create `backend/.env`:
+```env
+NODE_ENV=development
+PORT=5000
+MONGODB_URI=mongodb://localhost:27017/smartleads
+
+JWT_ACCESS_SECRET=your_access_secret_here
+JWT_REFRESH_SECRET=your_refresh_secret_here
+JWT_ACCESS_EXPIRES_IN=15m
+JWT_REFRESH_EXPIRES_IN=7d
+BCRYPT_ROUNDS=12
+```
+
+Then start:
+```bash
 npm run dev
 ```
 Backend runs at `http://localhost:5000`
@@ -86,11 +114,12 @@ Backend runs at `http://localhost:5000`
 **3. Set up the frontend**
 ```bash
 cd frontend
-cp .env.example .env
 npm install
 npm run dev
 ```
 Frontend opens at `http://localhost:5173`
+
+> The Vite dev server proxies all `/api/*` requests to `localhost:5000` — no `VITE_API_URL` needed for local development.
 
 ---
 
@@ -98,28 +127,22 @@ Frontend opens at `http://localhost:5173`
 
 ### Backend — `backend/.env`
 
-Copy `backend/.env.example` and fill in the values.
+| Variable | Default | Required |
+|----------|---------|----------|
+| `NODE_ENV` | `development` | No |
+| `PORT` | `5000` | No |
+| `MONGODB_URI` | `mongodb://localhost:27017/smartleads` | No |
+| `JWT_ACCESS_SECRET` | — | **Yes** |
+| `JWT_REFRESH_SECRET` | — | **Yes** |
+| `JWT_ACCESS_EXPIRES_IN` | `15m` | No |
+| `JWT_REFRESH_EXPIRES_IN` | `7d` | No |
+| `BCRYPT_ROUNDS` | `12` | No |
+
+### Frontend — `frontend/.env` (optional)
 
 ```env
-NODE_ENV=development
-PORT=5000
-MONGODB_URI=mongodb://localhost:27017/smartleads
-
-# Required — use any long random strings
-JWT_ACCESS_SECRET=your_access_secret_here
-JWT_REFRESH_SECRET=your_refresh_secret_here
-
-JWT_ACCESS_EXPIRES_IN=15m
-JWT_REFRESH_EXPIRES_IN=7d
-BCRYPT_ROUNDS=12
-CORS_ORIGIN=http://localhost:5173
-```
-
-### Frontend — `frontend/.env`
-
-```env
-# Leave empty for local dev — Vite proxy routes to localhost:5000
-# For production set to your deployed backend URL, e.g. https://your-app.onrender.com
+# Leave empty for local dev — Vite proxy handles /api/* -> localhost:5000
+# Set to your deployed backend URL for production builds
 VITE_API_URL=
 ```
 
@@ -138,7 +161,7 @@ Every response follows this shape:
 }
 ```
 
-Errors look like:
+Errors:
 ```json
 {
   "success": false,
@@ -147,17 +170,19 @@ Errors look like:
 }
 ```
 
+Rate limit: **100 requests per 15 minutes** per IP on all `/api/*` routes.
+
 ---
 
 ### Auth Endpoints
 
-| Method | Endpoint | Who can use | Description |
-|--------|----------|-------------|-------------|
-| POST | `/auth/register` | Anyone | Create a new account |
-| POST | `/auth/login` | Anyone | Log in and get tokens |
+| Method | Endpoint | Auth required | Description |
+|--------|----------|---------------|-------------|
+| POST | `/auth/register` | No | Create a new account |
+| POST | `/auth/login` | No | Log in and get tokens |
 | POST | `/auth/refresh` | Cookie | Get a new access token |
-| POST | `/auth/logout` | Logged in | Log out and clear session |
-| GET | `/auth/me` | Logged in | Get current user details |
+| POST | `/auth/logout` | Yes | Log out and clear session |
+| GET | `/auth/me` | Yes | Get current user details |
 
 **Register**
 ```
@@ -234,12 +259,12 @@ All parameters are optional and can be combined.
 | `status` | string | `Qualified` | Filter by lead status |
 | `source` | string | `Instagram` | Filter by lead source |
 | `search` | string | `rahul` | Search by name or email |
-| `sortBy` | string | `createdAt` | Field to sort by (`createdAt`, `name`, `email`) |
+| `sortBy` | string | `createdAt` | `createdAt`, `name`, or `email` |
 | `sortOrder` | string | `desc` | `asc` or `desc` |
 | `page` | number | `2` | Page number (default: 1) |
 | `limit` | number | `10` | Results per page (default: 10, max: 100) |
 
-Example — get page 2 of qualified Instagram leads sorted by name:
+Example:
 ```
 GET /api/v1/leads?status=Qualified&source=Instagram&sortBy=name&sortOrder=asc&page=2
 ```
@@ -288,7 +313,7 @@ GET /api/v1/leads?status=Qualified&source=Instagram&sortBy=name&sortOrder=asc&pa
 ```
 `status` values: `New`, `Contacted`, `Qualified`, `Lost`  
 `source` values: `Website`, `Instagram`, `Referral`  
-`notes` is optional.
+`notes` is optional (max 1000 characters).
 
 ---
 
@@ -321,7 +346,7 @@ Returns counts broken down by status and source. Admin gets counts for all leads
 
 **GET /leads/export/csv**
 
-Downloads a CSV file of all leads matching the current filters. Accepts the same query parameters as `GET /leads` (except `page` and `limit`).
+Downloads a CSV of all leads matching the current filters. Accepts the same query parameters as `GET /leads` (except `page` and `limit`).
 
 ```
 GET /api/v1/leads/export/csv?status=Qualified&source=Instagram
@@ -331,7 +356,7 @@ Response is a `text/csv` file download.
 
 ---
 
-### HTTP Status Codes Used
+### HTTP Status Codes
 
 | Code | Meaning |
 |------|---------|
@@ -366,29 +391,20 @@ Response is a `text/csv` file download.
 - **JWT Authentication** — Access tokens (15 min) + refresh tokens (7 days) with rotation. Refresh token stored in an httpOnly cookie.
 - **Role-Based Access Control** — Admin and Sales roles with data visibility enforced at the database query level.
 - **Lead CRUD** — Create, read, update, delete leads with full validation on both frontend and backend.
-- **Advanced Filtering** — Status, source, and search filters all work together in a single query.
-- **Debounced Search** — 400ms debounce on the search input so the API is not called on every keystroke.
-- **Backend Pagination** — Uses MongoDB `skip` and `limit` with full metadata (`totalPages`, `hasNextPage`, etc.).
+- **Advanced Filtering** — Status, source, and search filters combine in a single query.
+- **Debounced Search** — 400 ms debounce on the search input to avoid calling the API on every keystroke.
+- **Backend Pagination** — MongoDB `skip`/`limit` with full metadata (`totalPages`, `hasNextPage`, etc.).
 - **CSV Export** — Exports the current filtered view as a downloadable CSV.
-- **Dark Mode** — Toggle in the sidebar, persisted in localStorage.
-- **Reactive Stats** — Dashboard stats update automatically after creating, editing, or deleting a lead.
-
----
-
-## Deployment
-
-| Service | Platform | URL |
-|---------|----------|-----|
-| Frontend | Vercel | https://smart-leads-dashboard.vercel.app |
-| Backend | Render | https://smart-leads-dashboard-2z9r.onrender.com |
-| Database | MongoDB Atlas | Shared cluster |
-
-> The Render backend may take 30–60 seconds on the first request if it has been idle (free tier spins down after inactivity).
+- **Dark Mode** — Toggle in the sidebar, persisted in `localStorage`.
+- **Reactive Stats** — Dashboard and Stats pages update automatically after creating, editing, or deleting a lead.
+- **Rate Limiting** — 100 requests per 15 minutes per IP on all API routes.
+- **Security Headers** — Helmet sets secure HTTP headers on every response.
 
 ---
 
 ## Local Development Tips
 
 - Run `npm run typecheck` in the frontend folder to check TypeScript without building.
-- The Vite dev server proxies `/api/*` to `localhost:5000` — you do not need to set `VITE_API_URL` for local development.
-- The backend `/health` endpoint returns `{ "status": "ok" }` and can be used to verify the server is running.
+- Run `npm run build` in the backend to compile TypeScript to `dist/`.
+- The backend `/health` endpoint returns `{ "status": "ok" }` — useful for verifying the server is up.
+- The Vite dev server proxies `/api/*` to `localhost:5000` — set `VITE_API_URL` only for production builds.
