@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/Badge';
 import { Spinner } from '@/components/ui/Spinner';
 import { useAuthStore } from '@/stores/authStore';
 import { useLeadStore } from '@/stores/leadStore';
+import toast from 'react-hot-toast';
 
 interface StatCardProps {
   label: string;
@@ -37,7 +38,7 @@ export const DashboardPage = () => {
     setLoading(true);
     leadsApi.getStats()
       .then(setStats)
-      .catch(console.error)
+      .catch(() => toast.error('Failed to load stats'))
       .finally(() => setLoading(false));
   }, [statsVersion]);
 
