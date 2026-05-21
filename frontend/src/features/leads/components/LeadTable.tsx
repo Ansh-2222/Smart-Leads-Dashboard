@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { Pencil, Trash2, Eye, Users } from 'lucide-react';
+import { Pencil, Trash2, Eye, Users, Check, X } from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Spinner } from '@/components/ui/Spinner';
 import { EmptyState } from '@/components/ui/EmptyState';
 import type { Lead } from '@/types';
 import { useLeadStore } from '@/stores/leadStore';
+import { formatDate } from '@/utils/formatDate';
 
 interface LeadTableProps {
   onEdit: (lead: Lead) => void;
@@ -15,10 +16,11 @@ interface LeadTableProps {
 
 export const LeadTable = ({ onEdit, onView, onDelete }: LeadTableProps) => {
   const { leads, isLoading } = useLeadStore();
+  const [confirmId, setConfirmId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Delete this lead?')) return;
+  const handleDeleteConfirm = async (id: string) => {
+    setConfirmId(null);
     setDeletingId(id);
     await onDelete(id);
     setDeletingId(null);
@@ -82,29 +84,50 @@ export const LeadTable = ({ onEdit, onView, onDelete }: LeadTableProps) => {
                   <Badge value={lead.source} />
                 </td>
                 <td className="px-6 py-4 text-gray-500 dark:text-gray-400">
-                  {new Date(lead.createdAt).toLocaleDateString('en-IN', {
-                    day: '2-digit',
-                    month: 'short',
-                    year: 'numeric',
-                  })}
+                  {formatDate(lead.createdAt)}
                 </td>
                 <td className="px-6 py-4">
                   <div className="flex items-center justify-end gap-2">
-                    <Button variant="ghost" size="sm" onClick={() => onView(lead)}>
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm" onClick={() => onEdit(lead)}>
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleDelete(lead._id)}
-                      isLoading={deletingId === lead._id}
-                      className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    {confirmId === lead._id ? (
+                      <>
+                        <span className="text-xs text-gray-500 dark:text-gray-400 mr-1">Delete?</span>
+                        <Button
+                          variant="danger"
+                          size="sm"
+                          onClick={() => handleDeleteConfirm(lead._id)}
+                          isLoading={deletingId === lead._id}
+                          aria-label="Confirm delete"
+                        >
+                          <Check className="h-3.5 w-3.5" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setConfirmId(null)}
+                          aria-label="Cancel delete"
+                        >
+                          <X className="h-3.5 w-3.5" />
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <Button variant="ghost" size="sm" onClick={() => onView(lead)} aria-label="View lead">
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="sm" onClick={() => onEdit(lead)} aria-label="Edit lead">
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setConfirmId(lead._id)}
+                          className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+                          aria-label="Delete lead"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </>
+                    )}
                   </div>
                 </td>
               </tr>

@@ -1,6 +1,7 @@
 import { Modal } from '@/components/ui/Modal';
 import { Badge } from '@/components/ui/Badge';
 import type { Lead } from '@/types';
+import { formatDateTime } from '@/utils/formatDate';
 
 interface LeadDetailModalProps {
   lead: Lead | null;
@@ -15,12 +16,7 @@ export const LeadDetailModal = ({ lead, onClose }: LeadDetailModalProps) => {
     { label: 'Status', value: <Badge value={lead.status} /> },
     { label: 'Source', value: <Badge value={lead.source} /> },
     { label: 'Created By', value: lead.createdBy?.name ?? 'Unknown' },
-    {
-      label: 'Created At',
-      value: new Date(lead.createdAt).toLocaleString('en-IN', {
-        day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit',
-      }),
-    },
+    { label: 'Created At', value: formatDateTime(lead.createdAt) },
   ];
 
   return (

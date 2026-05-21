@@ -3,6 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
+import { Textarea } from '@/components/ui/Textarea';
 import { Button } from '@/components/ui/Button';
 import type { Lead } from '@/types';
 import { LeadSource, LeadStatus } from '@/types';
@@ -77,19 +78,15 @@ export const LeadForm = ({ lead, onSubmit, onCancel }: LeadFormProps) => {
           {...register('source')}
         />
       </div>
-      <div>
-        <label htmlFor="notes" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-          Notes <span className="text-gray-400">(optional)</span>
-        </label>
-        <textarea
-          id="notes"
-          rows={3}
-          placeholder="Add any notes about this lead..."
-          className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
-          {...register('notes')}
-        />
-        {errors.notes && <p className="mt-1 text-xs text-red-500">{errors.notes.message}</p>}
-      </div>
+      <Textarea
+        label="Notes"
+        hint="(optional)"
+        id="notes"
+        rows={3}
+        placeholder="Add any notes about this lead..."
+        error={errors.notes?.message}
+        {...register('notes')}
+      />
 
       <div className="flex gap-3 pt-2">
         <Button type="button" variant="outline" className="flex-1" onClick={onCancel}>
