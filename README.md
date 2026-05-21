@@ -6,13 +6,6 @@ A full-stack Lead Management Dashboard built with the MERN stack. Supports JWT a
 **Backend API:** [https://smart-leads-dashboard-2z9r.onrender.com/api/v1](https://smart-leads-dashboard-2z9r.onrender.com/api/v1)  
 **GitHub:** [https://github.com/your-username/smart-leads-dashboard](https://github.com/your-username/smart-leads-dashboard)
 
-> **Test Accounts**
-> | Role | Email | Password |
-> |------|-------|----------|
-> | Admin | admin@demo.com | Admin@123 |
-> | Sales | sales@demo.com | Sales@123 |
-
----
 
 ## What This Project Does
 
