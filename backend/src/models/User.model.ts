@@ -52,10 +52,9 @@ userSchema.methods['comparePassword'] = async function (candidatePassword: strin
 };
 
 userSchema.set('toJSON', {
-  transform: (_doc: unknown, ret: Record<string, unknown>) => {
-    delete ret['password'];
-    delete ret['refreshToken'];
-    return ret;
+  transform: (_doc, ret) => {
+    const { password: _password, refreshToken: _refreshToken, ...safe } = ret;
+    return safe;
   },
 });
 
