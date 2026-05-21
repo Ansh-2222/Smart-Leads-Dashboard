@@ -13,6 +13,11 @@ import { AxiosError } from 'axios';
 import { UserRole } from '@/types';
 
 
+const ROLE_OPTIONS = [
+  { value: UserRole.SALES, label: 'Sales User' },
+  { value: UserRole.ADMIN, label: 'Admin' },
+] as const;
+
 const schema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   email: z.string().email('Enter a valid email'),
@@ -22,7 +27,7 @@ const schema = z.object({
     .regex(/[A-Z]/, 'Must include uppercase')
     .regex(/[a-z]/, 'Must include lowercase')
     .regex(/\d/, 'Must include a number'),
-  role: z.enum(['admin', 'sales']).default('sales'),
+  role: z.nativeEnum(UserRole).default(UserRole.SALES),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -35,11 +40,11 @@ export const RegisterPage = () => {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<FormData>({ resolver: zodResolver(schema), defaultValues: { role: 'sales' } });
+  } = useForm<FormData>({ resolver: zodResolver(schema), defaultValues: { role: UserRole.SALES } });
 
   const onSubmit = async (data: FormData) => {
     try {
-      const result = await authApi.register({ ...data, role: data.role as UserRole });
+      const result = await authApi.register(data);
       setAuth(result.user, result.accessToken);
       toast.success('Account created successfully!');
       navigate('/dashboard');
@@ -91,10 +96,7 @@ export const RegisterPage = () => {
             <Select
               label="Role"
               id="role"
-              options={[
-                { value: 'sales', label: 'Sales User' },
-                { value: 'admin', label: 'Admin' },
-              ]}
+              options={ROLE_OPTIONS}
               error={errors.role?.message}
               {...register('role')}
             />
