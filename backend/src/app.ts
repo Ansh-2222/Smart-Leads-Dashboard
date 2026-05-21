@@ -12,16 +12,18 @@ const app = express();
 
 app.use(helmet());
 
-const allowedOrigins = env.CORS_ORIGIN.split(',').map((o) => o.trim());
+const rawCors = env.CORS_ORIGIN || '';
+const allowAllCors = rawCors.trim() === '*';
+const allowedOrigins = allowAllCors ? [] : rawCors.split(',').map((o) => o.trim());
 
 app.use(
   cors({
     origin: (origin, callback) => {
+      if (allowAllCors) return callback(null, true);
       if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error(`CORS: origin ${origin} not allowed`));
+        return callback(null, true);
       }
+      return callback(new Error(`CORS: origin ${origin} not allowed`));
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],

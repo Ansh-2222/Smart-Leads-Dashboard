@@ -5,6 +5,8 @@ import app from './app';
 const startServer = async (): Promise<void> => {
   await connectDatabase();
 
+  console.log(`Configured CORS_ORIGIN: ${env.CORS_ORIGIN}`);
+
   const server = app.listen(env.PORT, () => {
     console.log(`Server running on port ${env.PORT} in ${env.NODE_ENV} mode`);
   });
