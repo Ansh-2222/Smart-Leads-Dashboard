@@ -9,6 +9,9 @@ import { DashboardPage } from '@/features/leads/pages/DashboardPage';
 import { LeadsPage } from '@/features/leads/pages/LeadsPage';
 import { StatsPage } from '@/features/leads/pages/StatsPage';
 import { useThemeStore } from '@/stores/themeStore';
+import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
+
+const TOAST_BASE = { borderRadius: '10px' } as const;
 
 const App = () => {
   const { isDark } = useThemeStore();
@@ -17,20 +20,14 @@ const App = () => {
     document.documentElement.classList.toggle('dark', isDark);
   }, [isDark]);
 
+  const toastStyle = isDark
+    ? { ...TOAST_BASE, background: '#1f2937', color: '#f9fafb', border: '1px solid #374151' }
+    : { ...TOAST_BASE, background: '#fff', color: '#111827', border: '1px solid #e5e7eb' };
+
   return (
+    <ErrorBoundary>
     <BrowserRouter>
-      <Toaster
-        position="top-right"
-        toastOptions={{
-          duration: 3000,
-          style: {
-            borderRadius: '10px',
-            background: isDark ? '#1f2937' : '#fff',
-            color: isDark ? '#f9fafb' : '#111827',
-            border: isDark ? '1px solid #374151' : '1px solid #e5e7eb',
-          },
-        }}
-      />
+      <Toaster position="top-right" toastOptions={{ duration: 3000, style: toastStyle }} />
       <Routes>
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
@@ -48,6 +45,7 @@ const App = () => {
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
     </BrowserRouter>
+    </ErrorBoundary>
   );
 };
 

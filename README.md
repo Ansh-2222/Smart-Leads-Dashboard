@@ -6,7 +6,7 @@ A production-quality **MERN stack** Lead Management Dashboard with JWT authentic
 
 | Layer | Technology |
 |-------|-----------|
-| Frontend | React 18 + TypeScript + TailwindCSS v4 + Zustand |
+| Frontend | React 19 + TypeScript + TailwindCSS v4 + Zustand |
 | Backend | Node.js + Express 5 + TypeScript |
 | Database | MongoDB 7 + Mongoose 9 |
 | Auth | JWT (access + refresh tokens) + bcrypt |
@@ -47,13 +47,23 @@ App opens at **http://localhost:5173**
 ## Docker Setup
 
 ```bash
-# From project root
-cp .env.example .env  # edit secrets
+# 1. Copy and fill in secrets
+cp .env.example .env
 
+# 2. Build and start all services (MongoDB + backend + frontend)
 docker-compose up --build
+
+# 3. Run in background
+docker-compose up -d --build
 ```
 
-App available at **http://localhost**
+| Service | URL |
+|---------|-----|
+| Frontend | http://localhost |
+| Backend API | http://localhost:5000/api/v1 |
+| Health check | http://localhost:5000/health |
+
+> MongoDB data is persisted in a named Docker volume (`mongo_data`).
 
 ---
 
@@ -169,28 +179,34 @@ App available at **http://localhost**
 ```
 smart-leads-dashboard/
 ├── backend/
-│   └── src/
-│       ├── config/        # DB connection, env config
-│       ├── controllers/   # Request handlers
-│       ├── middleware/    # Auth, validation, errors
-│       ├── models/        # Mongoose models
-│       ├── repositories/  # Data access layer
-│       ├── routes/        # Express routers
-│       ├── services/      # Business logic
-│       ├── types/         # TypeScript interfaces
-│       └── utils/         # JWT, ApiError, ApiResponse
+│   ├── src/
+│   │   ├── config/        # DB connection, env validation
+│   │   ├── controllers/   # Request handlers
+│   │   ├── middleware/    # Auth, validation, error handler
+│   │   ├── models/        # Mongoose schemas
+│   │   ├── repositories/  # Data access layer
+│   │   ├── routes/        # Express routers
+│   │   ├── services/      # Business logic
+│   │   ├── types/         # TypeScript interfaces & enums
+│   │   └── utils/         # JWT, ApiError, ApiResponse
+│   ├── Dockerfile
+│   └── .env.example
 │
 ├── frontend/
-│   └── src/
-│       ├── api/           # Axios client + API calls
-│       ├── components/    # Shared UI + layout
-│       ├── features/      # Auth + Leads feature modules
-│       ├── hooks/         # useLeads, useDebounce
-│       ├── stores/        # Zustand auth/lead/theme stores
-│       ├── types/         # TypeScript types
-│       └── utils/         # cn() utility
+│   ├── src/
+│   │   ├── api/           # Axios client + typed API calls
+│   │   ├── components/    # Shared UI (Button, Input, Modal…) + layouts
+│   │   ├── features/      # auth/ and leads/ feature modules
+│   │   ├── hooks/         # useLeads, useDebounce
+│   │   ├── stores/        # Zustand: auth, lead, theme
+│   │   ├── types/         # TypeScript types
+│   │   └── utils/         # cn(), formatDate
+│   ├── Dockerfile
+│   ├── nginx.conf
+│   └── .env.example
 │
 ├── docker-compose.yml
+├── .env.example
 └── README.md
 ```
 
