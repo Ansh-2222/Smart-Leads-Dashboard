@@ -6,6 +6,7 @@ import { LeadStatus, LeadSource } from '@/types';
 import { Badge } from '@/components/ui/Badge';
 import { Spinner } from '@/components/ui/Spinner';
 import { useAuthStore } from '@/stores/authStore';
+import { useLeadStore } from '@/stores/leadStore';
 
 interface StatCardProps {
   label: string;
@@ -28,15 +29,17 @@ const StatCard = ({ label, value, icon, color }: StatCardProps) => (
 
 export const DashboardPage = () => {
   const { user } = useAuthStore();
+  const statsVersion = useLeadStore((s) => s.statsVersion);
   const [stats, setStats] = useState<LeadStats | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true);
     leadsApi.getStats()
       .then(setStats)
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, []);
+  }, [statsVersion]);
 
   const getStatusCount = (status: LeadStatus) =>
     stats?.byStatus.find((s) => s._id === status)?.count ?? 0;

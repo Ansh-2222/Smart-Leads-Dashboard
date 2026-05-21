@@ -4,14 +4,17 @@ import type { LeadStats } from '@/types';
 import { LeadStatus, LeadSource } from '@/types';
 import { Badge } from '@/components/ui/Badge';
 import { Spinner } from '@/components/ui/Spinner';
+import { useLeadStore } from '@/stores/leadStore';
 
 export const StatsPage = () => {
+  const statsVersion = useLeadStore((s) => s.statsVersion);
   const [stats, setStats] = useState<LeadStats | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true);
     leadsApi.getStats().then(setStats).catch(console.error).finally(() => setLoading(false));
-  }, []);
+  }, [statsVersion]);
 
   if (loading) return <div className="flex items-center justify-center h-64"><Spinner size="lg" /></div>;
 

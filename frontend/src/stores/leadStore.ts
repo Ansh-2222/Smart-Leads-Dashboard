@@ -7,6 +7,7 @@ interface LeadState {
   filters: LeadFilters;
   isLoading: boolean;
   selectedLead: Lead | null;
+  statsVersion: number;
   setLeads: (leads: Lead[], pagination: PaginationMeta) => void;
   setFilters: (filters: Partial<LeadFilters>) => void;
   resetFilters: () => void;
@@ -15,6 +16,7 @@ interface LeadState {
   addLead: (lead: Lead) => void;
   updateLead: (id: string, lead: Lead) => void;
   removeLead: (id: string) => void;
+  bumpStats: () => void;
 }
 
 const defaultFilters: LeadFilters = {
@@ -33,6 +35,7 @@ export const useLeadStore = create<LeadState>()((set) => ({
   filters: defaultFilters,
   isLoading: false,
   selectedLead: null,
+  statsVersion: 0,
   setLeads: (leads, pagination) => set({ leads, pagination }),
   setFilters: (filters) =>
     set((s) => ({ filters: { ...s.filters, ...filters, page: filters.page ?? 1 } })),
@@ -43,4 +46,5 @@ export const useLeadStore = create<LeadState>()((set) => ({
   updateLead: (id, lead) =>
     set((s) => ({ leads: s.leads.map((l) => (l._id === id ? lead : l)) })),
   removeLead: (id) => set((s) => ({ leads: s.leads.filter((l) => l._id !== id) })),
+  bumpStats: () => set((s) => ({ statsVersion: s.statsVersion + 1 })),
 }));
