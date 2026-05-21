@@ -11,6 +11,7 @@ import { errorHandler, notFound } from './middleware/error.middleware';
 const app = express();
 
 app.use(helmet());
+app.set('trust proxy', 1);
 app.use(
   cors({
     origin: true,
@@ -21,7 +22,6 @@ app.use(
     optionsSuccessStatus: 200,
   }),
 );
-app.options('*', cors());
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
