@@ -1,206 +1,70 @@
 # Smart Leads Dashboard
 
-A production-quality **MERN stack** Lead Management Dashboard with JWT authentication, RBAC, advanced filtering, CSV export, and dark mode.
+A full-stack Lead Management Dashboard built with the MERN stack. Supports JWT authentication, role-based access control, advanced filtering, CSV export, and dark mode.
+
+**Live Demo:** [https://smart-leads-dashboard.vercel.app](https://smart-leads-dashboard.vercel.app)  
+**Backend API:** [https://smart-leads-dashboard-2z9r.onrender.com/api/v1](https://smart-leads-dashboard-2z9r.onrender.com/api/v1)  
+**GitHub:** [https://github.com/your-username/smart-leads-dashboard](https://github.com/your-username/smart-leads-dashboard)
+
+> **Test Accounts**
+> | Role | Email | Password |
+> |------|-------|----------|
+> | Admin | admin@demo.com | Admin@123 |
+> | Sales | sales@demo.com | Sales@123 |
+
+---
+
+## What This Project Does
+
+- Admins can see and manage **all leads** in the system
+- Sales users can only see **leads they created**
+- Leads can be filtered by status, source, or searched by name/email — all filters work together
+- Results are paginated (10 per page) with sorting options
+- Any filtered view can be exported as a CSV file
+- Dark mode is supported and remembered across sessions
+
+---
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
-| Frontend | React 19 + TypeScript + TailwindCSS v4 + Zustand |
-| Backend | Node.js + Express 5 + TypeScript |
-| Database | MongoDB 7 + Mongoose 9 |
-| Auth | JWT (access + refresh tokens) + bcrypt |
-| DevOps | Docker + Docker Compose |
+| Part | Technology |
+|------|-----------|
+| Frontend | React 19, TypeScript, TailwindCSS v4, Zustand |
+| Backend | Node.js, Express 5, TypeScript |
+| Database | MongoDB 7, Mongoose 9 |
+| Auth | JWT (access + refresh tokens), bcrypt |
+| Deployment | Vercel (frontend), Render (backend), MongoDB Atlas |
+| DevOps | Docker, Docker Compose |
 
 ---
 
-## Quick Start (Local Development)
-
-### Prerequisites
-- Node.js 20+
-- MongoDB running on `localhost:27017`
-
-### Backend
-
-```bash
-cd backend
-cp .env.example .env
-npm install
-npm run dev
-```
-
-Server starts at **http://localhost:5000**
-
-### Frontend
-
-```bash
-cd frontend
-cp .env.example .env
-npm install
-npm run dev
-```
-
-App opens at **http://localhost:5173**
-
----
-
-## Docker Setup
-
-```bash
-# 1. Copy and fill in secrets
-cp .env.example .env
-
-# 2. Build and start all services (MongoDB + backend + frontend)
-docker-compose up --build
-
-# 3. Run in background
-docker-compose up -d --build
-```
-
-| Service | URL |
-|---------|-----|
-| Frontend | http://localhost |
-| Backend API | http://localhost:5000/api/v1 |
-| Health check | http://localhost:5000/health |
-
-> MongoDB data is persisted in a named Docker volume (`mongo_data`).
-
----
-
-## Environment Variables
-
-### Backend (`backend/.env`)
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `NODE_ENV` | Environment | `development` |
-| `PORT` | Server port | `5000` |
-| `MONGODB_URI` | MongoDB connection URI | `mongodb://localhost:27017/smartleads` |
-| `JWT_ACCESS_SECRET` | JWT access token secret | — |
-| `JWT_REFRESH_SECRET` | JWT refresh token secret | — |
-| `JWT_ACCESS_EXPIRES_IN` | Access token TTL | `15m` |
-| `JWT_REFRESH_EXPIRES_IN` | Refresh token TTL | `7d` |
-| `BCRYPT_ROUNDS` | bcrypt cost factor | `12` |
-| `CORS_ORIGIN` | Allowed CORS origin | `http://localhost:5173` |
-
----
-
-## API Documentation
-
-### Base URL
-`http://localhost:5000/api/v1`
-
-### Authentication
-
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| POST | `/auth/register` | Register user | Public |
-| POST | `/auth/login` | Login | Public |
-| POST | `/auth/refresh` | Refresh tokens | Cookie |
-| POST | `/auth/logout` | Logout | Bearer |
-| GET | `/auth/me` | Get current user | Bearer |
-
-**Register Request Body:**
-```json
-{
-  "name": "John Doe",
-  "email": "john@example.com",
-  "password": "Password1",
-  "role": "sales"
-}
-```
-
-**Login Request Body:**
-```json
-{
-  "email": "john@example.com",
-  "password": "Password1"
-}
-```
-
-### Leads
-
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/leads` | List leads (paginated + filtered) | Bearer |
-| POST | `/leads` | Create lead | Bearer |
-| GET | `/leads/:id` | Get single lead | Bearer |
-| PUT | `/leads/:id` | Update lead | Bearer |
-| DELETE | `/leads/:id` | Delete lead | Bearer |
-| GET | `/leads/stats` | Get lead statistics | Bearer |
-| GET | `/leads/export/csv` | Export leads as CSV | Bearer |
-
-**Query Parameters for GET /leads:**
-
-| Param | Type | Description |
-|-------|------|-------------|
-| `status` | `New\|Contacted\|Qualified\|Lost` | Filter by status |
-| `source` | `Website\|Instagram\|Referral` | Filter by source |
-| `search` | string | Search by name or email |
-| `sortBy` | `createdAt\|name\|email` | Sort field |
-| `sortOrder` | `asc\|desc` | Sort direction |
-| `page` | number | Page number (default: 1) |
-| `limit` | number | Results per page (default: 10, max: 100) |
-
-**Create/Update Lead Body:**
-```json
-{
-  "name": "Rahul Sharma",
-  "email": "rahul@example.com",
-  "status": "New",
-  "source": "Instagram",
-  "notes": "Met at conference"
-}
-```
-
-**API Response Format:**
-```json
-{
-  "success": true,
-  "message": "Leads fetched",
-  "data": {
-    "data": [...],
-    "pagination": {
-      "total": 42,
-      "page": 1,
-      "limit": 10,
-      "totalPages": 5,
-      "hasNextPage": true,
-      "hasPrevPage": false
-    }
-  }
-}
-```
-
----
-
-## Architecture
+## Project Structure
 
 ```
 smart-leads-dashboard/
 ├── backend/
 │   ├── src/
-│   │   ├── config/        # DB connection, env validation
-│   │   ├── controllers/   # Request handlers
-│   │   ├── middleware/    # Auth, validation, error handler
-│   │   ├── models/        # Mongoose schemas
-│   │   ├── repositories/  # Data access layer
-│   │   ├── routes/        # Express routers
+│   │   ├── config/        # Environment config, DB connection
+│   │   ├── controllers/   # Route handlers
+│   │   ├── middleware/    # Auth check, validation, error handler
+│   │   ├── models/        # Mongoose schemas (User, Lead)
+│   │   ├── repositories/  # Database queries
+│   │   ├── routes/        # API route definitions
 │   │   ├── services/      # Business logic
-│   │   ├── types/         # TypeScript interfaces & enums
-│   │   └── utils/         # JWT, ApiError, ApiResponse
+│   │   ├── types/         # TypeScript interfaces and enums
+│   │   └── utils/         # JWT helpers, error/response classes
 │   ├── Dockerfile
 │   └── .env.example
 │
 ├── frontend/
 │   ├── src/
-│   │   ├── api/           # Axios client + typed API calls
-│   │   ├── components/    # Shared UI (Button, Input, Modal…) + layouts
-│   │   ├── features/      # auth/ and leads/ feature modules
+│   │   ├── api/           # Axios client and API call functions
+│   │   ├── components/    # Reusable UI components and page layouts
+│   │   ├── features/      # Auth pages and Leads pages
 │   │   ├── hooks/         # useLeads, useDebounce
-│   │   ├── stores/        # Zustand: auth, lead, theme
+│   │   ├── stores/        # Zustand state (auth, leads, theme)
 │   │   ├── types/         # TypeScript types
-│   │   └── utils/         # cn(), formatDate
+│   │   └── utils/         # Utility functions (cn, formatDate)
 │   ├── Dockerfile
 │   ├── nginx.conf
 │   └── .env.example
@@ -210,26 +74,382 @@ smart-leads-dashboard/
 └── README.md
 ```
 
-## Features
+---
 
-- **JWT Auth** — Access (15m) + refresh (7d) token rotation with httpOnly cookies
-- **RBAC** — Admin sees all leads; Sales users see only their own
-- **CRUD** — Full create/read/update/delete for leads
-- **Combined Filters** — Status + Source + Search work together
-- **Debounced Search** — 400ms debounce prevents excessive API calls
-- **Backend Pagination** — `skip`/`limit` with full metadata
-- **CSV Export** — Downloads current filter set as CSV
-- **Dark Mode** — Persisted via Zustand + localStorage
-- **Toast Notifications** — react-hot-toast on all actions
-- **Protected Routes** — Unauthenticated users redirected to login
+## Running Locally
+
+### Option 1 — Without Docker
+
+**Requirements:** Node.js 20+, MongoDB running on localhost
+
+**1. Clone the repo**
+```bash
+git clone https://github.com/your-username/smart-leads-dashboard.git
+cd smart-leads-dashboard
+```
+
+**2. Set up the backend**
+```bash
+cd backend
+cp .env.example .env
+# Open .env and fill in JWT_ACCESS_SECRET and JWT_REFRESH_SECRET
+npm install
+npm run dev
+```
+Backend runs at `http://localhost:5000`
+
+**3. Set up the frontend**
+```bash
+cd frontend
+cp .env.example .env
+# VITE_API_URL can stay empty for local dev (proxy handles it)
+npm install
+npm run dev
+```
+Frontend opens at `http://localhost:5173`
 
 ---
 
-## Commit Message Convention
+### Option 2 — With Docker (Recommended)
+
+**Requirements:** Docker and Docker Compose installed
+
+```bash
+# 1. Clone and enter the project
+git clone https://github.com/your-username/smart-leads-dashboard.git
+cd smart-leads-dashboard
+
+# 2. Set up environment variables
+cp .env.example .env
+# Open .env and set JWT_ACCESS_SECRET and JWT_REFRESH_SECRET
+
+# 3. Start everything
+docker-compose up --build
+```
+
+That's it. All three services start automatically.
+
+| Service | URL |
+|---------|-----|
+| Frontend | http://localhost |
+| Backend API | http://localhost:5000/api/v1 |
+| Health check | http://localhost:5000/health |
+
+MongoDB data is saved in a Docker volume so it survives restarts.
+
+To stop: `docker-compose down`  
+To stop and delete data: `docker-compose down -v`
+
+---
+
+## Environment Variables
+
+### Backend — `backend/.env`
+
+Copy `backend/.env.example` and fill in the required values.
+
+```env
+NODE_ENV=development
+PORT=5000
+MONGODB_URI=mongodb://localhost:27017/smartleads
+
+# Required — use any long random strings
+JWT_ACCESS_SECRET=your_access_secret_here
+JWT_REFRESH_SECRET=your_refresh_secret_here
+
+JWT_ACCESS_EXPIRES_IN=15m
+JWT_REFRESH_EXPIRES_IN=7d
+BCRYPT_ROUNDS=12
+CORS_ORIGIN=http://localhost:5173
+```
+
+### Frontend — `frontend/.env`
+
+```env
+# Leave empty for local dev — Vite proxy routes to localhost:5000
+# Set to your backend URL for production, e.g. https://your-app.onrender.com
+VITE_API_URL=
+```
+
+### Docker — `.env` (root)
+
+Only the JWT secrets are required:
+
+```env
+JWT_ACCESS_SECRET=your_access_secret_here
+JWT_REFRESH_SECRET=your_refresh_secret_here
+```
+
+---
+
+## API Documentation
+
+All endpoints are prefixed with `/api/v1`.
+
+Every response follows this shape:
+```json
+{
+  "success": true,
+  "message": "Description of what happened",
+  "data": { }
+}
+```
+
+Errors look like:
+```json
+{
+  "success": false,
+  "message": "What went wrong",
+  "errors": [{ "field": "email", "message": "Valid email required" }]
+}
+```
+
+---
+
+### Auth Endpoints
+
+| Method | Endpoint | Who can use | Description |
+|--------|----------|-------------|-------------|
+| POST | `/auth/register` | Anyone | Create a new account |
+| POST | `/auth/login` | Anyone | Log in and get tokens |
+| POST | `/auth/refresh` | Cookie | Get a new access token |
+| POST | `/auth/logout` | Logged in | Log out and clear session |
+| GET | `/auth/me` | Logged in | Get current user details |
+
+**Register**
+```
+POST /api/v1/auth/register
+```
+```json
+{
+  "name": "Rahul Sharma",
+  "email": "rahul@example.com",
+  "password": "Password1",
+  "role": "sales"
+}
+```
+`role` can be `"sales"` (default) or `"admin"`.  
+Password must be at least 8 characters with one uppercase letter and one number.
+
+**Login**
+```
+POST /api/v1/auth/login
+```
+```json
+{
+  "email": "rahul@example.com",
+  "password": "Password1"
+}
+```
+
+**Successful auth response:**
+```json
+{
+  "success": true,
+  "message": "Login successful",
+  "data": {
+    "user": {
+      "_id": "664f...",
+      "name": "Rahul Sharma",
+      "email": "rahul@example.com",
+      "role": "sales"
+    },
+    "accessToken": "eyJhbGciOiJIUzI1NiJ9..."
+  }
+}
+```
+The refresh token is set as an `httpOnly` cookie automatically.
+
+---
+
+### Leads Endpoints
+
+All leads endpoints require a `Bearer` token in the `Authorization` header.
 
 ```
-feat: add lead CSV export with active filters
-fix: handle refresh token rotation on 401
-refactor: extract lead repository from service layer
-chore: add Docker Compose health checks
+Authorization: Bearer <accessToken>
 ```
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/leads` | Get leads list (with filters and pagination) |
+| POST | `/leads` | Create a new lead |
+| GET | `/leads/:id` | Get a single lead by ID |
+| PUT | `/leads/:id` | Update a lead |
+| DELETE | `/leads/:id` | Delete a lead |
+| GET | `/leads/stats` | Get counts by status and source |
+| GET | `/leads/export/csv` | Download leads as a CSV file |
+
+---
+
+**GET /leads — Query Parameters**
+
+All parameters are optional and can be combined.
+
+| Parameter | Type | Example | Description |
+|-----------|------|---------|-------------|
+| `status` | string | `Qualified` | Filter by lead status |
+| `source` | string | `Instagram` | Filter by lead source |
+| `search` | string | `rahul` | Search by name or email |
+| `sortBy` | string | `createdAt` | Field to sort by (`createdAt`, `name`, `email`) |
+| `sortOrder` | string | `desc` | `asc` or `desc` |
+| `page` | number | `2` | Page number (default: 1) |
+| `limit` | number | `10` | Results per page (default: 10, max: 100) |
+
+Example — get page 2 of qualified Instagram leads sorted by name:
+```
+GET /api/v1/leads?status=Qualified&source=Instagram&sortBy=name&sortOrder=asc&page=2
+```
+
+**Paginated response:**
+```json
+{
+  "success": true,
+  "message": "Leads fetched",
+  "data": {
+    "data": [
+      {
+        "_id": "664f...",
+        "name": "Rahul Sharma",
+        "email": "rahul@example.com",
+        "status": "Qualified",
+        "source": "Instagram",
+        "notes": "Met at conference",
+        "createdBy": { "_id": "...", "name": "Admin", "email": "admin@example.com" },
+        "createdAt": "2025-05-21T10:30:00.000Z"
+      }
+    ],
+    "pagination": {
+      "total": 42,
+      "page": 2,
+      "limit": 10,
+      "totalPages": 5,
+      "hasNextPage": true,
+      "hasPrevPage": true
+    }
+  }
+}
+```
+
+---
+
+**POST /leads — Create Lead**
+```json
+{
+  "name": "Priya Mehta",
+  "email": "priya@example.com",
+  "status": "New",
+  "source": "Referral",
+  "notes": "Referred by Rahul"
+}
+```
+`status` values: `New`, `Contacted`, `Qualified`, `Lost`  
+`source` values: `Website`, `Instagram`, `Referral`  
+`notes` is optional.
+
+---
+
+**GET /leads/stats**
+
+Returns counts broken down by status and source. Admin gets counts for all leads; sales users get counts for their own leads only.
+
+```json
+{
+  "success": true,
+  "message": "Stats fetched",
+  "data": {
+    "total": 24,
+    "byStatus": [
+      { "_id": "New", "count": 10 },
+      { "_id": "Contacted", "count": 8 },
+      { "_id": "Qualified", "count": 4 },
+      { "_id": "Lost", "count": 2 }
+    ],
+    "bySource": [
+      { "_id": "Website", "count": 12 },
+      { "_id": "Instagram", "count": 7 },
+      { "_id": "Referral", "count": 5 }
+    ]
+  }
+}
+```
+
+---
+
+**GET /leads/export/csv**
+
+Downloads a CSV file of all leads matching the current filters. Accepts the same query parameters as `GET /leads` (except `page` and `limit`).
+
+```
+GET /api/v1/leads/export/csv?status=Qualified&source=Instagram
+```
+
+Response is a `text/csv` file download.
+
+---
+
+### HTTP Status Codes Used
+
+| Code | Meaning |
+|------|---------|
+| 200 | Success |
+| 201 | Created |
+| 400 | Bad request (invalid data) |
+| 401 | Not authenticated |
+| 403 | Authenticated but not allowed |
+| 404 | Resource not found |
+| 409 | Conflict (e.g. email already exists) |
+| 422 | Validation failed |
+| 500 | Server error |
+
+---
+
+## Role-Based Access
+
+| Action | Admin | Sales User |
+|--------|-------|------------|
+| View all leads | Yes | No (own leads only) |
+| View own leads | Yes | Yes |
+| Create lead | Yes | Yes |
+| Edit any lead | Yes | No (own only) |
+| Delete any lead | Yes | No (own only) |
+| View stats for all leads | Yes | No (own only) |
+| Export all leads | Yes | No (own only) |
+
+---
+
+## Features Summary
+
+- **JWT Authentication** — Access tokens (15 min) + refresh tokens (7 days) with rotation. Refresh token is stored in an httpOnly cookie, access token in memory.
+- **Role-Based Access Control** — Admin and Sales roles with different data visibility enforced at the database query level.
+- **Lead CRUD** — Create, read, update, delete leads with full validation on both frontend and backend.
+- **Advanced Filtering** — Status, source, and search filters all work together in a single query.
+- **Debounced Search** — 400ms debounce on the search input so the API is not called on every keystroke.
+- **Backend Pagination** — Uses MongoDB `skip` and `limit` with full metadata (`totalPages`, `hasNextPage`, etc.).
+- **CSV Export** — Exports the current filtered view as a downloadable CSV.
+- **Dark Mode** — Toggle in the sidebar, persisted in localStorage.
+- **Reactive Stats** — Dashboard stats update automatically after creating, editing, or deleting a lead.
+
+---
+
+## Deployment
+
+The app is deployed on two free-tier platforms:
+
+| Service | Platform | URL |
+|---------|----------|-----|
+| Frontend | Vercel | https://smart-leads-dashboard.vercel.app |
+| Backend | Render | https://smart-leads-dashboard-2z9r.onrender.com |
+| Database | MongoDB Atlas | Shared cluster (M0 free tier) |
+
+**Notes:**
+- The Render backend may take 30–60 seconds to respond on the first request if it has been idle (free tier spins down after inactivity).
+- The frontend uses `VITE_API_URL` to point to the backend. The `/api/v1` prefix is always appended in code, so the env variable only holds the host.
+
+---
+
+## Local Development Tips
+
+- Run `npm run typecheck` in the frontend folder to check TypeScript without building.
+- The Vite dev server proxies `/api/*` to `localhost:5000` automatically — you do not need to set `VITE_API_URL` for local development.
+- The backend `/health` endpoint returns `{ "status": "ok" }` and can be used to verify the server is running.
