@@ -1,4 +1,5 @@
 import { Response, NextFunction } from 'express';
+import { Types } from 'mongoose';
 import { leadService } from '../services/lead.service';
 import { sendSuccess } from '../utils/ApiResponse';
 import { AuthenticatedRequest, LeadFilters, LeadStatus, LeadSource, UserRole } from '../types';
@@ -121,7 +122,10 @@ export const getStats = async (
 ): Promise<void> => {
   try {
     const ctx = getUserCtx(req);
-    const baseFilter = ctx.userRole === UserRole.ADMIN ? {} : { createdBy: ctx.userId };
+    const baseFilter =
+      ctx.userRole === UserRole.ADMIN
+        ? {}
+        : { createdBy: new Types.ObjectId(ctx.userId) };
 
     const { LeadModel } = await import('../models/Lead.model');
     const [total, byStatus, bySource] = await Promise.all([
